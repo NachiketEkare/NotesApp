@@ -1,28 +1,33 @@
-package com.example.notesapp
+package com.example.notesapp.view
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import android.window.OnBackInvokedCallback
 import androidx.lifecycle.ViewModelProvider
+import com.example.notesapp.R
+import com.example.notesapp.adapter.NoteAdapter
+import com.example.notesapp.adapter.NoteClickInterface
+import com.example.notesapp.adapter.NoteDeleteInterface
+import com.example.notesapp.model.Note
+import com.example.notesapp.viewmodel.NoteviewModel
 
 import java.text.SimpleDateFormat
 import java.util.*
 
-class addnoteactivity : AppCompatActivity() {
+class Addnoteactivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInterface {
 
-    lateinit var noteTitleEdit: EditText
+    private lateinit var noteTitleEdit: EditText
     private lateinit var notediscEdit: EditText
     private lateinit var addupdateBtn: Button
     private lateinit var backBtn: Button
-    lateinit var viewmodel:NoteviewModel
-    var noteID = -1
-    @SuppressLint("MissingInflatedId")
+    private lateinit var viewmodel: NoteviewModel
+    private val noteAdapter: NoteAdapter by lazy { NoteAdapter(this,this) }
+    private var noteID = -1
+    @SuppressLint("MissingInflatedId", "SetTextI18n", "SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.addnoteactivity)
@@ -35,38 +40,26 @@ class addnoteactivity : AppCompatActivity() {
         backBtn = findViewById(R.id.BackBtn)
 
         backBtn.setOnClickListener {
-            val intent = Intent(this,MainActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             this.finish()
         }
 
-        fun onOptionsItemSelected(item: MenuItem): Boolean {
-            when (item.itemId) {
-                android.R.id.home -> {
-                    // Handle the back button press
-                    onBackPressed()
-                    return true
-                }
-                // Handle other menu items if needed
-
-                else -> return super.onOptionsItemSelected(item)
-            }
-       }
-
-        viewmodel = ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(application))
-            .get(NoteviewModel::class.java)
+        viewmodel = ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory
+            .getInstance(application))[NoteviewModel::class.java]
 
         val notetype = intent.getStringExtra("noteType")
         if (notetype.equals("Edit")){
             val notetitle = intent.getStringExtra("noteTitle")
             val notedisc = intent.getStringExtra("notedisc")
             noteID = intent.getIntExtra("noteId",-1)
-            addupdateBtn.setText("Update")
+            addupdateBtn.text = "Update"
+
             noteTitleEdit.setText(notetitle)
             notediscEdit.setText(notedisc)
 
         }else{
-            addupdateBtn.setText("Save")
+            addupdateBtn.text = "Save"
         }
         addupdateBtn.setOnClickListener {
             // on below line we are getting
@@ -77,9 +70,9 @@ class addnoteactivity : AppCompatActivity() {
             // and then saving or updating the data.
             if (notetype.equals("Edit")) {
                 if (noteTitle.isNotEmpty() || noteDescription.isNotEmpty()) {
-                    val sdf = SimpleDateFormat("dd MMM, yyyy - HH:mm")
+                    val sdf = SimpleDateFormat(" dd MMM, yyyy - HH:mm")
                     val currentDateAndTime: String = sdf.format(Date())
-                    var updatedNote = Note(noteTitle, noteDescription, currentDateAndTime)
+                    val updatedNote = Note(noteTitle, noteDescription, currentDateAndTime)
                     updatedNote.id = noteID
                     viewmodel.updateNote(updatedNote)
                     Toast.makeText(this, "Note Updated", Toast.LENGTH_SHORT).show()
@@ -90,8 +83,17 @@ class addnoteactivity : AppCompatActivity() {
                     val currentDateAndTime: String = sdf.format(Date())
                     // if the string is not empty we are calling a
                     // add note method to add data to our room database.
-                    viewmodel.addNote(Note(noteTitle, noteDescription, currentDateAndTime))
-                    Toast.makeText(this, "$noteTitle Added", Toast.LENGTH_SHORT).show()
+                    if (noteAdapter.addNoteIfNotDuplicate(Note(noteTitle,
+                            noteDescription, currentDateAndTime))) {
+                        viewmodel.addNote(Note(noteTitle, noteDescription, currentDateAndTime))
+                        Toast.makeText(this, "$noteTitle Added", Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
+                        Toast.makeText(this, "Note with same title already exists",
+                            Toast.LENGTH_SHORT).show()
+                    }
+//                    viewmodel.addNote(Note(noteTitle, noteDescription, currentDateAndTime))
+//                    Toast.makeText(this, "$noteTitle Added", Toast.LENGTH_SHORT).show()
                 }
             }
             // opening the new activity on below line
@@ -100,6 +102,14 @@ class addnoteactivity : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onNoteclick(note: Note) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDelete(note: Note) {
+        TODO("Not yet implemented")
     }
 
 }

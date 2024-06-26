@@ -1,8 +1,10 @@
-package com.example.notesapp
+package com.example.notesapp.repository
 
 import androidx.lifecycle.LiveData
+import com.example.notesapp.database.Notesdao
+import com.example.notesapp.model.Note
 
-class NoteRepository(private val notesDao: Notes_dao) {
+class NoteRepository(private val notesDao: Notesdao) {
 
     val allnotes: LiveData<List<Note>> = notesDao.getAllnotes()
 

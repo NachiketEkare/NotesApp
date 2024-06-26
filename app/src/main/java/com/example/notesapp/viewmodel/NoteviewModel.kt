@@ -1,11 +1,12 @@
-package com.example.notesapp
+package com.example.notesapp.viewmodel
 
 import android.app.Application
-import android.view.animation.Transformation
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.notesapp.repository.NoteRepository
+import com.example.notesapp.database.Notedatabase
+import com.example.notesapp.model.Note
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

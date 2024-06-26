@@ -1,4 +1,4 @@
-package com.example.notesapp
+package com.example.notesapp.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -7,9 +7,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.notesapp.model.Note
 
 @Dao
-interface Notes_dao {
+interface Notesdao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(note: Note):Long

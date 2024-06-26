@@ -28,6 +28,7 @@
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/roboto"
                 android:text="NoteTitle"
                 android:textColor="@color/md_theme_scrim_mediumContrast"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -35,10 +36,26 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/description"
+                android:layout_width="253dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="50dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/robotolight"
+                android:maxLines="1"
+                android:text="Description"
+                android:textColor="@color/md_theme_scrim_mediumContrast"
+                app:layout_constraintEnd_toEndOf="@+id/notetitle"
+                app:layout_constraintStart_toStartOf="@+id/notetitle"
+                app:layout_constraintTop_toTopOf="@+id/notetitle" />
+
+            <TextView
                 android:id="@+id/timestamp"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/robotolight"
                 android:text="Timestamp"
                 android:textColor="@color/md_theme_scrim_mediumContrast"
                 app:layout_constraintBottom_toBottomOf="parent"
