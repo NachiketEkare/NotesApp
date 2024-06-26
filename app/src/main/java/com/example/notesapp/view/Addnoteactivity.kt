@@ -8,25 +8,23 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.notesapp.R
-import com.example.notesapp.adapter.NoteAdapter
-import com.example.notesapp.adapter.NoteClickInterface
-import com.example.notesapp.adapter.NoteDeleteInterface
 import com.example.notesapp.model.Note
 import com.example.notesapp.viewmodel.NoteviewModel
-
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class Addnoteactivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInterface {
+class Addnoteactivity : AppCompatActivity() {
 
     private lateinit var noteTitleEdit: EditText
     private lateinit var notediscEdit: EditText
     private lateinit var addupdateBtn: Button
     private lateinit var backBtn: Button
     private lateinit var viewmodel: NoteviewModel
-    private val noteAdapter: NoteAdapter by lazy { NoteAdapter(this,this) }
     private var noteID = -1
+
     @SuppressLint("MissingInflatedId", "SetTextI18n", "SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,20 +43,22 @@ class Addnoteactivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInter
             this.finish()
         }
 
-        viewmodel = ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory
-            .getInstance(application))[NoteviewModel::class.java]
+        viewmodel = ViewModelProvider(
+            this, ViewModelProvider.AndroidViewModelFactory
+                .getInstance(application)
+        )[NoteviewModel::class.java]
 
         val notetype = intent.getStringExtra("noteType")
-        if (notetype.equals("Edit")){
+        if (notetype.equals("Edit")) {
             val notetitle = intent.getStringExtra("noteTitle")
             val notedisc = intent.getStringExtra("notedisc")
-            noteID = intent.getIntExtra("noteId",-1)
+            noteID = intent.getIntExtra("noteId", -1)
             addupdateBtn.text = "Update"
 
             noteTitleEdit.setText(notetitle)
             notediscEdit.setText(notedisc)
 
-        }else{
+        } else {
             addupdateBtn.text = "Save"
         }
         addupdateBtn.setOnClickListener {
@@ -78,22 +78,29 @@ class Addnoteactivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInter
                     Toast.makeText(this, "Note Updated", Toast.LENGTH_SHORT).show()
                 }
             } else {
+                // if the string is not empty we are calling a
+                // add note method to add data to our room database.
                 if (noteTitle.isNotEmpty() || noteDescription.isNotEmpty()) {
                     val sdf = SimpleDateFormat(" dd MMM, yyyy - HH:mm")
                     val currentDateAndTime: String = sdf.format(Date())
-                    // if the string is not empty we are calling a
-                    // add note method to add data to our room database.
-                    if (noteAdapter.addNoteIfNotDuplicate(Note(noteTitle,
-                            noteDescription, currentDateAndTime))) {
-                        viewmodel.addNote(Note(noteTitle, noteDescription, currentDateAndTime))
-                        Toast.makeText(this, "$noteTitle Added", Toast.LENGTH_SHORT)
-                            .show()
-                    } else {
-                        Toast.makeText(this, "Note with same title already exists",
-                            Toast.LENGTH_SHORT).show()
+                    // checks with duplicate title
+                    lifecycleScope.launch {
+                        if (viewmodel.addNoteIfNotDuplicate
+                                (Note(noteTitle, noteDescription, currentDateAndTime))
+                        ) {
+                            viewmodel.addNote(Note(noteTitle, noteDescription, currentDateAndTime))
+                            Toast.makeText(
+                                this@Addnoteactivity, "$noteTitle Added",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                this@Addnoteactivity,
+                                "Note with same title already exists",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-//                    viewmodel.addNote(Note(noteTitle, noteDescription, currentDateAndTime))
-//                    Toast.makeText(this, "$noteTitle Added", Toast.LENGTH_SHORT).show()
                 }
             }
             // opening the new activity on below line
@@ -102,14 +109,6 @@ class Addnoteactivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInter
         }
 
 
-    }
-
-    override fun onNoteclick(note: Note) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onDelete(note: Note) {
-        TODO("Not yet implemented")
     }
 
 }

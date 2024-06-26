@@ -7,11 +7,11 @@ import androidx.room.RoomDatabase
 import com.example.notesapp.model.Note
 
 @Database(entities = [Note::class], version = 1, exportSchema = false)
-abstract class Notedatabase:RoomDatabase() {
+abstract class Notedatabase : RoomDatabase() {
 
     abstract fun notedao(): Notesdao
 
-    companion object{
+    companion object {
         @Volatile
         private var INSTANCE: Notedatabase? = null
 
@@ -30,5 +30,5 @@ abstract class Notedatabase:RoomDatabase() {
             }
         }
     }
-    }
+}
 

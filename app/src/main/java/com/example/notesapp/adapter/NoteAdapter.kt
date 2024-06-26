@@ -13,14 +13,14 @@ import com.example.notesapp.model.Note
 class NoteAdapter(
     private val noteClickInterface: NoteClickInterface,
     private val noteDeleteInterface: NoteDeleteInterface
-):RecyclerView.Adapter<NoteAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<NoteAdapter.ViewHolder>() {
 
 
     private val allNotes = ArrayList<Note>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemview = LayoutInflater.from(parent.context)
-            .inflate(R.layout.each_row,parent,false)
+            .inflate(R.layout.each_row, parent, false)
         return ViewHolder(itemview)
     }
 
@@ -32,7 +32,7 @@ class NoteAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.note.text = allNotes[position].noteTitle
         holder.noteContent.text = allNotes[position].description
-        holder.timestamp.text = "Last Updated"+ allNotes[position].timestamp
+        holder.timestamp.text = "Last Updated" + allNotes[position].timestamp
 
         holder.btnDelete.setOnClickListener {
             noteDeleteInterface.onDelete(allNotes[position])
@@ -41,7 +41,8 @@ class NoteAdapter(
             noteClickInterface.onNoteclick(allNotes[position])
         }
     }
-    class ViewHolder(itemView:View):RecyclerView.ViewHolder(itemView) {
+
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val note: TextView = itemView.findViewById(R.id.notetitle)
         val noteContent: TextView = itemView.findViewById(R.id.description)
@@ -62,22 +63,12 @@ class NoteAdapter(
         return allNotes[position]
     }
 
-    fun addNoteIfNotDuplicate(note: Note): Boolean {
-        if (allNotes.any { it.noteTitle == note.noteTitle }) {
-            return false // Duplicate found, return false
-        }
-        allNotes.add(note)
-        notifyItemInserted(allNotes.size - 1)
-        return true
-
-    }
-
 }
 
-interface NoteClickInterface{
+interface NoteClickInterface {
     fun onNoteclick(note: Note)
 }
 
-interface NoteDeleteInterface{
+interface NoteDeleteInterface {
     fun onDelete(note: Note)
 }

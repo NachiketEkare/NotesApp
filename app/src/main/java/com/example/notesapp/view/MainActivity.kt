@@ -19,15 +19,15 @@ import com.example.notesapp.model.Note
 import com.example.notesapp.viewmodel.NoteviewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInterface
-    ,androidx.appcompat.widget.SearchView.OnQueryTextListener {
+class MainActivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInterface,
+    androidx.appcompat.widget.SearchView.OnQueryTextListener {
 
-    private lateinit var fab : FloatingActionButton
-    private lateinit var eachitem : RecyclerView
+    private lateinit var fab: FloatingActionButton
+    private lateinit var eachitem: RecyclerView
     lateinit var viewModel: NoteviewModel
     private lateinit var searchView: androidx.appcompat.widget.SearchView
     private val noteAdapter: NoteAdapter
-    by lazy { NoteAdapter(this,this) }
+            by lazy { NoteAdapter(this, this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +42,10 @@ class MainActivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInterfac
         searchView = findViewById(R.id.SearchView)
 
         eachitem.adapter = noteAdapter
-        viewModel = ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory
-            .getInstance(application))[NoteviewModel::class.java]
+        viewModel = ViewModelProvider(
+            this, ViewModelProvider.AndroidViewModelFactory
+                .getInstance(application)
+        )[NoteviewModel::class.java]
         viewModel.allnotes.observe(this) { list ->
             list?.let {
                 noteAdapter.updateList(it)
@@ -57,15 +59,16 @@ class MainActivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInterfac
                 val intent = Intent(this@MainActivity, Addnoteactivity::class.java)
                 startActivity(intent)
                 this.finish()
-            }
-            catch (e:Exception){
+            } catch (e: Exception) {
                 println(e.message)
             }
 
         }
 
-        ItemTouchHelper(object:ItemTouchHelper.SimpleCallback(0,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT,){
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT,
+        ) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -76,26 +79,28 @@ class MainActivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInterfac
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 viewModel.deleteNote(noteAdapter.getNote(viewHolder.adapterPosition))
-                Toast.makeText(this@MainActivity,"Note is deleted",
-                    Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@MainActivity, "Note is deleted",
+                    Toast.LENGTH_LONG
+                ).show()
             }
 
         }).attachToRecyclerView(eachitem)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu,menu)
+        menuInflater.inflate(R.menu.menu, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.deleteAllnotes -> showDialogMsg()
         }
         return true
     }
 
-    private fun showDialogMsg(){
+    private fun showDialogMsg() {
         val dialogmsg = AlertDialog.Builder(this)
         dialogmsg.setTitle("Are you sure ?")
         dialogmsg.setMessage("Do you want to delete All Notes")
@@ -109,10 +114,10 @@ class MainActivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInterfac
 
     override fun onNoteclick(note: Note) {
         val intent = Intent(this@MainActivity, Addnoteactivity::class.java)
-        intent.putExtra("noteType","Edit")
-        intent.putExtra("noteTitle",note.noteTitle)
-        intent.putExtra("notedisc",note.description)
-        intent.putExtra("noteId",note.id)
+        intent.putExtra("noteType", "Edit")
+        intent.putExtra("noteTitle", note.noteTitle)
+        intent.putExtra("notedisc", note.description)
+        intent.putExtra("noteId", note.id)
         startActivity(intent)
         this.finish()
     }
@@ -124,8 +129,10 @@ class MainActivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInterfac
         deleteBuilder.setMessage("Do you want to delete Note")
         deleteBuilder.setPositiveButton("Yes") { _, _ ->
             viewModel.deleteNote(note)
-            Toast.makeText(this, "${note.noteTitle} is deleted",
-                Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this, "${note.noteTitle} is deleted",
+                Toast.LENGTH_LONG
+            ).show()
         }
         deleteBuilder.setNegativeButton("No") { _, _ ->
 
@@ -135,20 +142,20 @@ class MainActivity : AppCompatActivity(), NoteClickInterface, NoteDeleteInterfac
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        if(query!=null){
+        if (query != null) {
             searchDatabase(query)
         }
         return true
     }
 
     override fun onQueryTextChange(query: String?): Boolean {
-        if(query!=null){
+        if (query != null) {
             searchDatabase(query)
         }
         return true
     }
 
-    private fun searchDatabase(query:String){
+    private fun searchDatabase(query: String) {
         val searchQuery = "%$query%"
 
         viewModel.searchDatabase(searchQuery).observe(this) { list ->

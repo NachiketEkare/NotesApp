@@ -13,7 +13,7 @@ import com.example.notesapp.model.Note
 interface Notesdao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(note: Note):Long
+    suspend fun insert(note: Note): Long
 
     @Update
     suspend fun update(note: Note)
@@ -29,6 +29,9 @@ interface Notesdao {
 
     @Query("SELECT * FROM Note_table WHERE Title LIKE :searchQuery")
     fun getNotesWithTitleLike(searchQuery: String): LiveData<List<Note>>
+
+    @Query("SELECT COUNT(*) FROM Note_table WHERE Title = :title")
+    suspend fun countNotesWithTitle(title: String): Int
 
 
 }

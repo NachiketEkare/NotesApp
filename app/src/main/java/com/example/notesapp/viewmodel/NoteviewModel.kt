@@ -10,10 +10,10 @@ import com.example.notesapp.model.Note
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class NoteviewModel(application: Application): AndroidViewModel(application) {
+class NoteviewModel(application: Application) : AndroidViewModel(application) {
 
-    val allnotes:LiveData<List<Note>>
-    private val repository : NoteRepository
+    val allnotes: LiveData<List<Note>>
+    private val repository: NoteRepository
 
     init {
         val dao = Notedatabase.getDatabase(application).notedao()
@@ -22,23 +22,27 @@ class NoteviewModel(application: Application): AndroidViewModel(application) {
 
     }
 
-    fun deleteNote(note: Note) = viewModelScope.launch(Dispatchers.IO){
+    fun deleteNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
         repository.delete(note)
     }
 
-    fun updateNote(note: Note) = viewModelScope.launch(Dispatchers.IO){
+    fun updateNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
         repository.update(note)
     }
 
-    fun addNote(note: Note) = viewModelScope.launch(Dispatchers.IO){
+    fun addNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
         repository.insert(note)
     }
 
-    fun deleteallNotes() = viewModelScope.launch(Dispatchers.IO){
+    fun deleteallNotes() = viewModelScope.launch(Dispatchers.IO) {
         repository.deleteAllnotes()
     }
 
-    fun searchDatabase(searchQuery:String):LiveData<List<Note>>{
+    fun searchDatabase(searchQuery: String): LiveData<List<Note>> {
         return repository.getNotesWithTitleLike(searchQuery)
+    }
+
+    suspend fun addNoteIfNotDuplicate(note: Note): Boolean {
+        return repository.addNoteIfNotDuplicate(note)
     }
 }
